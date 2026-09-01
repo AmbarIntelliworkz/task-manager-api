@@ -27,7 +27,6 @@ describe('TasksService', () => {
     }).compile();
 
     service = module.get<TasksService>(TasksService);
-
   });
 
   it('should return all tasks', async () => {
@@ -142,6 +141,35 @@ describe('TasksService', () => {
     });
 
     expect(result).toEqual(updatedTask);
+
+  });
+
+  it('should delete a task', async () => {
+    const id = 1;
+
+    const existingTask = {
+      id: 1,
+      title: 'Learn NestJS',
+      description: 'Learn testing',
+      completed: false,
+    };
+
+    mockPrismaService.task.findUnique.mockResolvedValue(existingTask);
+
+    mockPrismaService.task.delete.mockResolvedValue(existingTask);
+
+    const result = await service.remove(id);
+
+    expect(mockPrismaService.task.findUnique).toHaveBeenCalledWith({
+      where: { id: 1 },
+    });
+
+    expect(mockPrismaService.task.delete).toHaveBeenCalledWith({
+      where: { id: 1 },
+    });
+
+    expect(result).toEqual(existingTask);
+
   });
   
 });
